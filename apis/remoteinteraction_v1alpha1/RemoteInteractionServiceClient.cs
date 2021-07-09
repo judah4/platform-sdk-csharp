@@ -42,6 +42,9 @@ namespace Improbable.SpatialOS.RemoteInteraction.V1Alpha1
         /// </returns>
         public static RemoteInteractionServiceSettings GetDefault() => new RemoteInteractionServiceSettings();
 
+        private static int _maxAttempts = 3;
+        private static double _delayMultiplier = 1.2;
+
         /// <summary>
         /// Constructs a new <see cref="RemoteInteractionServiceSettings"/> object with default settings.
         /// </summary>
@@ -70,48 +73,8 @@ namespace Improbable.SpatialOS.RemoteInteraction.V1Alpha1
         /// <item><description><see cref="grpccore::StatusCode.Unavailable"/></description></item>
         /// </list>
         /// </remarks>
-        public static sys::Predicate<grpccore::RpcException> IdempotentRetryFilter { get; } =
+        public static sys::Predicate<sys::Exception> IdempotentRetryFilter { get; } =
             gaxgrpc::RetrySettings.FilterForStatusCodes(grpccore::StatusCode.Unavailable);
-
-        /// <summary>
-        /// "Default" retry backoff for <see cref="RemoteInteractionServiceClient"/> RPC methods.
-        /// </summary>
-        /// <returns>
-        /// The "Default" retry backoff for <see cref="RemoteInteractionServiceClient"/> RPC methods.
-        /// </returns>
-        /// <remarks>
-        /// The "Default" retry backoff for <see cref="RemoteInteractionServiceClient"/> RPC methods is defined as:
-        /// <list type="bullet">
-        /// <item><description>Initial delay: 100 milliseconds</description></item>
-        /// <item><description>Maximum delay: 10000 milliseconds</description></item>
-        /// <item><description>Delay multiplier: 1.2</description></item>
-        /// </list>
-        /// </remarks>
-        public static gaxgrpc::BackoffSettings GetDefaultRetryBackoff() => new gaxgrpc::BackoffSettings(
-            delay: sys::TimeSpan.FromMilliseconds(100),
-            maxDelay: sys::TimeSpan.FromMilliseconds(10000),
-            delayMultiplier: 1.2
-        );
-
-        /// <summary>
-        /// "Default" timeout backoff for <see cref="RemoteInteractionServiceClient"/> RPC methods.
-        /// </summary>
-        /// <returns>
-        /// The "Default" timeout backoff for <see cref="RemoteInteractionServiceClient"/> RPC methods.
-        /// </returns>
-        /// <remarks>
-        /// The "Default" timeout backoff for <see cref="RemoteInteractionServiceClient"/> RPC methods is defined as:
-        /// <list type="bullet">
-        /// <item><description>Initial timeout: 10000 milliseconds</description></item>
-        /// <item><description>Timeout multiplier: 1.2</description></item>
-        /// <item><description>Maximum timeout: 20000 milliseconds</description></item>
-        /// </list>
-        /// </remarks>
-        public static gaxgrpc::BackoffSettings GetDefaultTimeoutBackoff() => new gaxgrpc::BackoffSettings(
-            delay: sys::TimeSpan.FromMilliseconds(10000),
-            maxDelay: sys::TimeSpan.FromMilliseconds(20000),
-            delayMultiplier: 1.2
-        );
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -134,13 +97,14 @@ namespace Improbable.SpatialOS.RemoteInteraction.V1Alpha1
         /// </list>
         /// Default RPC expiration is 60000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings EntityCommandSettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(60000)),
+        public gaxgrpc::CallSettings EntityCommandSettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(100),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(20000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: IdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -163,13 +127,14 @@ namespace Improbable.SpatialOS.RemoteInteraction.V1Alpha1
         /// </list>
         /// Default RPC expiration is 60000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings ReserveEntityIdSettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(60000)),
+        public gaxgrpc::CallSettings ReserveEntityIdSettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(100),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(20000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: IdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -192,13 +157,14 @@ namespace Improbable.SpatialOS.RemoteInteraction.V1Alpha1
         /// </list>
         /// Default RPC expiration is 60000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings CreateEntitySettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(60000)),
+        public gaxgrpc::CallSettings CreateEntitySettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(100),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(20000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: IdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -221,13 +187,14 @@ namespace Improbable.SpatialOS.RemoteInteraction.V1Alpha1
         /// </list>
         /// Default RPC expiration is 60000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings DeleteEntitySettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(60000)),
+        public gaxgrpc::CallSettings DeleteEntitySettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(100),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(20000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: IdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -250,13 +217,14 @@ namespace Improbable.SpatialOS.RemoteInteraction.V1Alpha1
         /// </list>
         /// Default RPC expiration is 60000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings EntityQuerySettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(60000)),
+        public gaxgrpc::CallSettings EntityQuerySettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(100),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(20000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: IdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// Creates a deep clone of this object, with all the same property values.
