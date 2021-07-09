@@ -42,6 +42,9 @@ namespace Improbable.SpatialOS.ServiceAccount.V1Alpha1
         /// </returns>
         public static ServiceAccountServiceSettings GetDefault() => new ServiceAccountServiceSettings();
 
+        private static int _maxAttempts = 3;
+        private static double _delayMultiplier = 1.3;
+
         /// <summary>
         /// Constructs a new <see cref="ServiceAccountServiceSettings"/> object with default settings.
         /// </summary>
@@ -70,7 +73,7 @@ namespace Improbable.SpatialOS.ServiceAccount.V1Alpha1
         /// <item><description><see cref="grpccore::StatusCode.Unavailable"/></description></item>
         /// </list>
         /// </remarks>
-        public static sys::Predicate<grpccore::RpcException> IdempotentRetryFilter { get; } =
+        public static sys::Predicate<sys::Exception> IdempotentRetryFilter { get; } =
             gaxgrpc::RetrySettings.FilterForStatusCodes(grpccore::StatusCode.DeadlineExceeded, grpccore::StatusCode.Unavailable);
 
         /// <summary>
@@ -80,48 +83,8 @@ namespace Improbable.SpatialOS.ServiceAccount.V1Alpha1
         /// <remarks>
         /// There are no RPC <see cref="grpccore::StatusCode"/>s eligible for retry for "NonIdempotent" RPC methods.
         /// </remarks>
-        public static sys::Predicate<grpccore::RpcException> NonIdempotentRetryFilter { get; } =
+        public static sys::Predicate<sys::Exception> NonIdempotentRetryFilter { get; } =
             gaxgrpc::RetrySettings.FilterForStatusCodes();
-
-        /// <summary>
-        /// "Default" retry backoff for <see cref="ServiceAccountServiceClient"/> RPC methods.
-        /// </summary>
-        /// <returns>
-        /// The "Default" retry backoff for <see cref="ServiceAccountServiceClient"/> RPC methods.
-        /// </returns>
-        /// <remarks>
-        /// The "Default" retry backoff for <see cref="ServiceAccountServiceClient"/> RPC methods is defined as:
-        /// <list type="bullet">
-        /// <item><description>Initial delay: 50 milliseconds</description></item>
-        /// <item><description>Maximum delay: 10000 milliseconds</description></item>
-        /// <item><description>Delay multiplier: 1.3</description></item>
-        /// </list>
-        /// </remarks>
-        public static gaxgrpc::BackoffSettings GetDefaultRetryBackoff() => new gaxgrpc::BackoffSettings(
-            delay: sys::TimeSpan.FromMilliseconds(50),
-            maxDelay: sys::TimeSpan.FromMilliseconds(10000),
-            delayMultiplier: 1.3
-        );
-
-        /// <summary>
-        /// "Default" timeout backoff for <see cref="ServiceAccountServiceClient"/> RPC methods.
-        /// </summary>
-        /// <returns>
-        /// The "Default" timeout backoff for <see cref="ServiceAccountServiceClient"/> RPC methods.
-        /// </returns>
-        /// <remarks>
-        /// The "Default" timeout backoff for <see cref="ServiceAccountServiceClient"/> RPC methods is defined as:
-        /// <list type="bullet">
-        /// <item><description>Initial timeout: 60000 milliseconds</description></item>
-        /// <item><description>Timeout multiplier: 1.0</description></item>
-        /// <item><description>Maximum timeout: 60000 milliseconds</description></item>
-        /// </list>
-        /// </remarks>
-        public static gaxgrpc::BackoffSettings GetDefaultTimeoutBackoff() => new gaxgrpc::BackoffSettings(
-            delay: sys::TimeSpan.FromMilliseconds(60000),
-            maxDelay: sys::TimeSpan.FromMilliseconds(60000),
-            delayMultiplier: 1.0
-        );
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -145,13 +108,14 @@ namespace Improbable.SpatialOS.ServiceAccount.V1Alpha1
         /// </list>
         /// Default RPC expiration is 600000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings ListServiceAccountsSettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(600000)),
+        public gaxgrpc::CallSettings ListServiceAccountsSettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(50),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(600000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: IdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -174,13 +138,14 @@ namespace Improbable.SpatialOS.ServiceAccount.V1Alpha1
         /// </list>
         /// Default RPC expiration is 600000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings CreateServiceAccountSettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(600000)),
+        public gaxgrpc::CallSettings CreateServiceAccountSettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(50),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(600000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: NonIdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -203,13 +168,14 @@ namespace Improbable.SpatialOS.ServiceAccount.V1Alpha1
         /// </list>
         /// Default RPC expiration is 600000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings UpdateServiceAccountSettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(600000)),
+        public gaxgrpc::CallSettings UpdateServiceAccountSettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(50),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(600000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: NonIdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// <see cref="gaxgrpc::CallSettings"/> for synchronous and asynchronous calls to
@@ -232,13 +198,14 @@ namespace Improbable.SpatialOS.ServiceAccount.V1Alpha1
         /// </list>
         /// Default RPC expiration is 600000 milliseconds.
         /// </remarks>
-        public gaxgrpc::CallSettings DeleteServiceAccountSettings { get; set; } = gaxgrpc::CallSettings.FromCallTiming(
-            gaxgrpc::CallTiming.FromRetry(new gaxgrpc::RetrySettings(
-                retryBackoff: GetDefaultRetryBackoff(),
-                timeoutBackoff: GetDefaultTimeoutBackoff(),
-                totalExpiration: gax::Expiration.FromTimeout(sys::TimeSpan.FromMilliseconds(600000)),
+        public gaxgrpc::CallSettings DeleteServiceAccountSettings { get; set; } = gaxgrpc::CallSettings.FromRetry(
+            gaxgrpc::RetrySettings.FromExponentialBackoff(
+                maxAttempts: _maxAttempts,
+                initialBackoff: sys::TimeSpan.FromMilliseconds(50),
+                maxBackoff: sys::TimeSpan.FromMilliseconds(600000),
+                backoffMultiplier: _delayMultiplier,
                 retryFilter: NonIdempotentRetryFilter
-            )));
+            ));
 
         /// <summary>
         /// Creates a deep clone of this object, with all the same property values.
